@@ -1,0 +1,10 @@
+[project]
+name = "buddy-tts"
+version = "0.1.0"
+description = "TTS monitor for Claude Code companion speech bubbles"
+requires-python = ">=3.10"
+dependencies = [
+    "fishaudio",
+    "pyobjc-framework-ApplicationServices",
+    "pyobjc-framework-Cocoa",
+]
