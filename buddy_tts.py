@@ -127,11 +127,15 @@ def speak_macos(text):
 
 
 def speak_fish(text):
-    from fishaudio import FishAudio
-    from fishaudio.utils import play as fish_play
-    client = FishAudio(api_key=FISH_API_KEY)
-    audio = client.tts.convert(text=text, reference_id=FISH_VOICE_ID)
-    fish_play(audio)
+    import io
+    from fish_audio_sdk import Session, TTSRequest
+    import sounddevice as sd
+    import soundfile as sf
+    session = Session(FISH_API_KEY)
+    audio_bytes = b"".join(session.tts(TTSRequest(reference_id=FISH_VOICE_ID, text=text)))
+    data, samplerate = sf.read(io.BytesIO(audio_bytes))
+    sd.play(data, samplerate)
+    sd.wait()
 
 
 def speak(text):
