@@ -24,7 +24,7 @@ Gives your Claude Code companion a voice. Monitors the terminal for speech bubbl
 
 ### The problem
 
-Claude Code's companion (Trellis the goose) renders speech bubbles directly in the terminal UI. This is pure client-side rendering — the text never passes through Claude Code's hooks system, so there's no built-in way to intercept it.
+Claude Code's companion (mine is Trellis the goose) renders speech bubbles directly in the terminal UI. This is pure client-side rendering — the text never passes through Claude Code's hooks system, so there's no built-in way to intercept it.
 
 ### The solution: macOS Accessibility API
 
@@ -75,6 +75,7 @@ Silent goose:          Talking goose:
 
 buddy-tts watches for the transition from no `(@>>` to `(@>>` present in the terminal text. This rising edge triggers bubble extraction — reading on every poll while talking would repeat the same text.
 
+**NOTE** Your companion will be different, you may need to update the code on how to check for when it is speaking.
 ### Extracting bubble text
 
 When the talking beak is detected, the script searches within ±15 lines of the goose for a Unicode box:
