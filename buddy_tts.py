@@ -34,9 +34,6 @@ FISH_API_KEY  = os.environ.get("FISH_API_KEY", "")
 FISH_VOICE_ID = os.environ.get("FISH_VOICE_ID", "")
 POLL_INTERVAL = float(os.environ.get("POLL_INTERVAL", "0.3"))
 
-# ── Goose detection ───────────────────────────────────────────────────────────
-TALKING_BEAK = "(@>>"
-
 # ── Accessibility helpers ─────────────────────────────────────────────────────
 
 def ax_get(element, attr):
@@ -86,30 +83,23 @@ def get_combined_text(ax_app):
 
 def extract_bubble_text(screen_text):
     """
-    Finds a speech bubble near the (@>> (talking) goose beak:
+    Finds any speech bubble in the terminal text by looking for a Unicode box:
 
         ╭────────────────────╮
-        │ bubble text here   │    [___]
-        ╰────────────────────╯      (@>>
+        │ bubble text here   │
+        ╰────────────────────╯
     """
     lines = screen_text.split("\n")
-    goose_line = next((i for i, l in enumerate(lines) if TALKING_BEAK in l), None)
-    if goose_line is None:
-        return None
 
-    search_start = max(0, goose_line - 15)
-    search_end   = min(len(lines), goose_line + 15)
-    window = lines[search_start:search_end]
-
-    top = next((i for i, l in enumerate(window) if re.search(r'╭─+╮\s*$', l)), None)
+    top = next((i for i, l in enumerate(lines) if re.search(r'╭─+╮\s*$', l)), None)
     if top is None:
         return None
-    bot = next((i for i, l in enumerate(window) if i > top and re.search(r'╰─+╯', l)), None)
+    bot = next((i for i, l in enumerate(lines) if i > top and re.search(r'╰─+╯', l)), None)
     if bot is None:
         return None
 
     text_lines = []
-    for line in window[top + 1:bot]:
+    for line in lines[top + 1:bot]:
         m = re.search(r'│ (.*?) *│', line)
         if m:
             text_lines.append(m.group(1).rstrip())
@@ -162,7 +152,6 @@ def main():
         print("No supported terminal found (Terminal or iTerm2)", file=sys.stderr)
         sys.exit(1)
 
-    was_talking = False
     last_spoken = None
 
     print("Listening for speech bubbles...")
@@ -170,15 +159,10 @@ def main():
     while True:
         try:
             text = get_combined_text(ax_app)
-            is_talking = TALKING_BEAK in text
-
-            if is_talking and not was_talking:
-                bubble = extract_bubble_text(text)
-                if bubble and bubble != last_spoken:
-                    speak(bubble)
-                    last_spoken = bubble
-
-            was_talking = is_talking
+            bubble = extract_bubble_text(text)
+            if bubble and bubble != last_spoken:
+                speak(bubble)
+                last_spoken = bubble
 
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
