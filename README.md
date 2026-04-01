@@ -1,5 +1,19 @@
 # buddy-tts
 
+```
+  ╭─────────────────────────────────╮
+  │  *honks in text-to-speech*      │
+  ╰─────────────────────────────────╯
+        \
+         \      ___
+          \    [___]
+           \    (@>>    <-- talking!
+                 ||
+               _(__)_
+                ^^^^
+               Trellis
+```
+
 Gives your Claude Code companion a voice. Monitors the terminal for speech bubbles and reads them aloud using either macOS built-in TTS or a custom [Fish.audio](https://fish.audio) voice.
 
 > **macOS only.** Requires accessibility permissions to read terminal content.
